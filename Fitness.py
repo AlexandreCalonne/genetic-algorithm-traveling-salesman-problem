@@ -6,7 +6,9 @@ class Fitness:
 
     def route_distance(self):
         if self.distance == 0:
-            self.distance = sum([self.route[i].distance(self.route[i + 1]) for i in range(len(self.route) - 1)])
+            self.distance = sum(
+                [self.route[i].distance(self.route[i + 1]) for i in range(len(self.route) - 1)]
+            )
             self.distance += self.route[len(self.route) - 1].distance(self.route[0])
 
         return self.distance

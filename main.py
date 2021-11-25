@@ -54,7 +54,6 @@ def selection(ranked_population, elites_size):
         selection_result.append(ranked_population[i][0])
 
     # Roulette wheel selection
-    # Disabled because crossover is not as precise with this selection at the moment.
     data_frame = pandas.DataFrame(numpy.array(ranked_population), columns=["Index", "Fitness"])
     data_frame['cum_sum'] = data_frame.Fitness.cumsum()
     data_frame['cum_perc'] = 100 * data_frame.cum_sum / data_frame.Fitness.sum()
@@ -193,6 +192,8 @@ def genetic_algorithm_plot(genes_pool, population_size, elites_size, mutation_ra
 
         print(i)
 
+    print(f'Best distance found: {progress[len(progress) - 1]}')
+
     plot.plot(progress)
     plot.ylabel('Distance')
     plot.xlabel('Generation')
@@ -205,13 +206,16 @@ def generate_cities(count):
     """
     cities = []
     for i in range(count):
-        cities.append(City(x=int(random.randint(0, 200)), y=int(random.randint(0, 200))))
+        cities.append(City(
+            x=int(random.randint(0, 200)),
+            y=int(random.randint(0, 200))
+        ))
 
     return cities
 
 
-genetic_algorithm_plot(genes_pool=generate_cities(25),
+genetic_algorithm_plot(genes_pool=generate_cities(30),
                        population_size=100,
                        elites_size=20,
                        mutation_rate=0.01,
-                       generations_count=500)
+                       generations_count=1000)
