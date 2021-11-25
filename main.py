@@ -1,7 +1,6 @@
 import operator
 import random
 import matplotlib.pyplot as plot
-import time
 
 import numpy
 import pandas as pandas
@@ -88,8 +87,6 @@ def crossover_parents(father, mother):
     Creates a new individual from the genes of its parents with an ordered crossover algorithm,
     since the order of the genes is important for the Traveling Salesman Problem.
     """
-
-    # Slower and useless ?
     gene_a_index = int(random.random() * len(father))
     gene_b_index = int(random.random() * len(father))
 
@@ -208,7 +205,7 @@ def generate_cities(count):
     """
     cities = []
     for i in range(count):
-        cities.append(City(x=int(random.random() * 200), y=int(random.random() * 200)))
+        cities.append(City(x=int(random.randint(0, 200)), y=int(random.randint(0, 200))))
 
     return cities
 
