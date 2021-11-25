@@ -3,6 +3,9 @@ import random
 import matplotlib.pyplot as plot
 import time
 
+import numpy
+import pandas as pandas
+
 from City import City
 from Fitness import Fitness
 
@@ -53,7 +56,6 @@ def selection(ranked_population, elites_size):
 
     # Roulette wheel selection
     # Disabled because crossover is not as precise with this selection at the moment.
-    """
     data_frame = pandas.DataFrame(numpy.array(ranked_population), columns=["Index", "Fitness"])
     data_frame['cum_sum'] = data_frame.Fitness.cumsum()
     data_frame['cum_perc'] = 100 * data_frame.cum_sum / data_frame.Fitness.sum()
@@ -65,7 +67,6 @@ def selection(ranked_population, elites_size):
             if pick <= data_frame.iat[j, 3]:
                 selection_result.append(ranked_population[j][0])
                 break
-    """
 
     return selection_result
 
@@ -87,18 +88,14 @@ def crossover_parents(father, mother):
     Creates a new individual from the genes of its parents with an ordered crossover algorithm,
     since the order of the genes is important for the Traveling Salesman Problem.
     """
-    half = len(father) // 2
-    child = father[:half] + mother[half:]
 
     # Slower and useless ?
-    """
     gene_a_index = int(random.random() * len(father))
     gene_b_index = int(random.random() * len(father))
 
     father_part = father[min(gene_a_index, gene_b_index):max(gene_a_index, gene_b_index)]
     mother_part = [item for item in mother if item not in father_part]
     child = father_part + mother_part
-    """
 
     return child
 
@@ -109,11 +106,14 @@ def crossover_population(mating_pool, population_desired_size):
     of the population.
     """
     children = []
-    length = len(mating_pool)
-    for i in range(population_desired_size - length):
-        parents_indices = random.sample(range(0, len(mating_pool)), 2)
+    length = len(mating_pool) - population_desired_size
+    pool = random.sample(mating_pool, len(mating_pool))
 
-        child = crossover_parents(mating_pool[parents_indices[0]], mating_pool[parents_indices[1]])
+    for i in range(0, population_desired_size):
+        children.append(mating_pool[i])
+
+    for i in range(0, length):
+        child = crossover_parents(pool[i], pool[len(mating_pool) - i - 1])
         children.append(child)
 
     return children
@@ -152,12 +152,10 @@ def next_generation(current_generation, elites_size, mutation_rate):
     Evolve the generation to a new one.
     """
     ranked_population = rank_routes(current_generation)
-
     selection_results = selection(ranked_population, elites_size)
     mating_pool = get_mating_pool(current_generation, selection_results)
-
-    mating_pool.extend(crossover_population(mating_pool, len(current_generation)))
-    new_generation = mutate_population(mating_pool, mutation_rate)
+    children = crossover_population(mating_pool, elites_size)
+    new_generation = mutate_population(children, mutation_rate)
 
     return new_generation, ranked_population
 
@@ -216,7 +214,7 @@ def generate_cities(count):
 
 
 genetic_algorithm_plot(genes_pool=generate_cities(25),
-                       population_size=200,
+                       population_size=100,
                        elites_size=20,
-                       mutation_rate=0.02,
-                       generations_count=1000)
+                       mutation_rate=0.01,
+                       generations_count=500)
